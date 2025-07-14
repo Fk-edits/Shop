@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Telegram Shopping Web</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #fff700, #ff9900); /* bright yellow-orange gradient */
+    color: #000000;
+    margin: 0;
+    padding: 20px;
+}
+
+h2, p {
+    text-align: center;
+    margin: 10px 0;
+    color: #000000; /* black text for contrast */
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: auto;
+    padding: 10px;
+}
+
+.card {
+    background: linear-gradient(135deg, #ffffff, #ffe066); /* bright white-yellow */
+    border-radius: 16px;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.card:hover img {
+    transform: scale(1.05);
+}
+
+.card h3 {
+    margin: 12px 0 6px;
+    font-weight: 600;
+    color: #4a148c; /* deep purple for contrast */
+}
+
+.card p {
+    margin: 5px 0 12px;
+    font-size: 0.95rem;
+    color: #d10000; /* bright red for price */
+}
+
+.card button {
+    background: linear-gradient(135deg, #00c853, #64dd17); /* vibrant green gradient */
+    border: none;
+    color: white;
+    padding: 12px;
+    width: 90%;
+    margin: 0 auto 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background 0.3s ease, transform 0.2s ease;
+    display: block;
+}
+
+.card button:hover {
+    background: linear-gradient(135deg, #64dd17, #00c853);
+    transform: scale(1.02);
+}
+
+.badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6200ea, #7c4dff); /* bright purple gradient */
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    color: white;
+    transition: background 0.3s ease;
+}
+
+.badge:hover {
+    background: linear-gradient(135deg, #7c4dff, #6200ea);
+}
+
+/* Ensure consistent button styling inside modals */
+.swal2-popup .swal2-confirm.swal2-styled,
+.swal2-popup .swal2-deny.swal2-styled,
+.swal2-popup .swal2-cancel.swal2-styled {
+    background: linear-gradient(135deg, #00b0ff, #2962ff) !important; /* bright blue gradient */
+    border: none !important;
+    box-shadow: none !important;
+    color: white !important;
+}
+
+.swal2-popup .swal2-confirm.swal2-styled:hover,
+.swal2-popup .swal2-deny.swal2-styled:hover,
+.swal2-popup .swal2-cancel.swal2-styled:hover {
+    background: linear-gradient(135deg, #2962ff, #00b0ff) !important;
+}
+
+.swal2-input {
+    background: #ffffff;
+    border: 2px solid #6200ea;
+    color: #000000;
+}
+
+.swal2-select {
+    background: #ffffff;
+    border: 2px solid #6200ea;
+    color: #000000;
+}
+
+.swal2-file {
+    background: #ffffff;
+    border: 2px solid #6200ea;
+    color: #000000;
+}
+
+@media (max-width: 600px) {
+    .container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+</head>
+<body>
+
+<h2>🚀Shopping Web</h2>
+<p>Order Telegram Premium, Stars, UC, Diamonds & more instantly.</p>
+
+<div class="container" id="productContainer"></div>
+
+<script>
+const products = [
+  { name: "Telegram Premium 1 Month", price: 150, image: "Telegram.jpg" },
+  { name: "Telegram Premium 3 Month", price: 1000, image: "Telegram.jpg" },
+  { name: "Telegram Premium 1 year", price: 2550, image: "Telegram.jpg" },
+  { name: "Telegram Stars", price: 100, image: "stars.jpg" },
+  { name: "PUBG UC", price: 200, image: "uc.jpg" },
+  { name: "Free Fire Diamond", price: 180, image: "freefire.jpg" },
+];
+
+const container = document.getElementById("productContainer");
+
+products.forEach((product, index) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <img src="${product.image}" alt="${product.name}">
+    <h3>${product.name}</h3>
+    <p>Price: ${product.price} ETB</p>
+    <button onclick="orderProduct(${index})">Buy Now</button>
+  `;
+  container.appendChild(card);
+});
+
+function escapeMarkdownV2(text) {
+    return text
+        .replace(/_/g, '\\_')
+        .replace(/\*/g, '\\*')
+        .replace(/\[/g, '\\[')
+        .replace(/\]/g, '\\]')
+        .replace(/\(/g, '\\(')
+        .replace(/\)/g, '\\)')
+        .replace(/~/g, '\\~')
+        .replace(/`/g, '\\`')
+        .replace(/>/g, '\\>')
+        .replace(/#/g, '\\#')
+        .replace(/\+/g, '\\+')
+        .replace(/-/g, '\\-')
+        .replace(/=/g, '\\=')
+        .replace(/\|/g, '\\|')
+        .replace(/\{/g, '\\{')
+        .replace(/\}/g, '\\}')
+        .replace(/\./g, '\\.')
+        .replace(/!/g, '\\!');
+}
+
+function orderProduct(index) {
+  const product = products[index];
+
+  Swal.fire({
+    title: `🛒 Order: ${product.name}`,
+    html: `
+      <input type="text" id="username" class="swal2-input" placeholder="Your Telegram Username (to receive your order)">
+      <input type="number" id="quantity" class="swal2-input" placeholder="Quantity" value="1" min="1" oninput="updateTotal(${product.price})">
+      <div id="totalPriceBadge" class="badge">Total: ${product.price} ETB</div>
+      <select id="payment" class="swal2-input" onchange="showAccount(this.value)">
+        <option value="">Select Payment Method</option>
+        <option value="CBE Mobile">CBE Mobile</option>
+        <option value="Telebirr">Telebirr</option>
+        <option value="Bank Transfer">Bank Transfer</option>
+        <option value="Airtime">Airtime</option>
+      </select>
+      <div id="paymentAccount" class="badge" style="display:none;"></div>
+      <div>
+        <button type="button" id="attachBtn" class="swal2-confirm swal2-styled" style="background:#0d6efd; margin-top:10px;">📷 Attach Screenshot</button>
+        <span id="fileName" style="display:block; font-size:0.9rem; color:#ccc;">No file chosen</span>
+        <input type="file" id="screenshot" accept="image/*" style="display:none;">
+      </div>
+    `,
+    confirmButtonText: "Submit Order",
+    focusConfirm: false,
+    preConfirm: () => {
+      let username = document.getElementById('username').value.trim();
+      const quantity = document.getElementById('quantity').value.trim();
+      const payment = document.getElementById('payment').value.trim();
+      const screenshot = document.getElementById('screenshot').files[0];
+
+      if (!username) {
+        Swal.showValidationMessage(`Please enter your Telegram username.`);
+        return false;
+      }
+      if (!username.startsWith('@')) {
+        username = '@' + username;
+      }
+      if (!quantity || !payment || !screenshot) {
+        Swal.showValidationMessage(`Please fill all fields and attach payment screenshot.`);
+        return false;
+      }
+      return { username, quantity, payment, screenshot };
+    }
+  }).then(result => {
+    if (result.isConfirmed) {
+      let { username, quantity, payment, screenshot } = result.value;
+      const totalPrice = product.price * quantity;
+      const productName = product.name;
+
+      username = escapeMarkdownV2(username);
+      const escapedProductName = escapeMarkdownV2(productName);
+      const escapedPayment = escapeMarkdownV2(payment);
+
+      const botToken = "7992053414:AAFZSCEvVexk_rCZbu3-3kxYWQUmuLgHcm8";
+      const chatId = "7570614168";
+      const message = 
+`🛒 *New Order Received*
+👤 *Username*: ${username}
+📦 *Product*: ${escapedProductName}
+🔢 *Quantity*: ${quantity}
+💰 *Total*: ${totalPrice} ETB
+💳 *Payment Method*: ${escapedPayment}`;
+
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: "MarkdownV2"
+        })
+      })
+      .then(() => {
+        const formData = new FormData();
+        formData.append('chat_id', chatId);
+        formData.append('photo', screenshot);
+        fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+          method: "POST",
+          body: formData
+        })
+        .then(() => {
+          Swal.fire("✅ Order Sent!", "Your order has been sent successfully!", "success");
+        })
+        .catch(() => {
+          Swal.fire("⚠️ Partial Success", "Order sent but failed to send screenshot.", "warning");
+        });
+      })
+      .catch(() => {
+        Swal.fire("❌ Failed", "Failed to send your order.", "error");
+      });
+    }
+  });
+
+  setTimeout(() => {
+    document.getElementById('attachBtn').addEventListener('click', () => {
+      document.getElementById('screenshot').click();
+    });
+    document.getElementById('screenshot').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      document.getElementById('fileName').textContent = file ? `Selected: ${file.name}` : 'No file chosen';
+    });
+  }, 500);
+
+  window.updateTotal = function(pricePerItem) {
+    const qty = document.getElementById('quantity').value || 1;
+    const total = pricePerItem * qty;
+    document.getElementById('totalPriceBadge').innerText = `Total: ${total} ETB`;
+  };
+
+  window.showAccount = function(method) {
+    const accountText = document.getElementById('paymentAccount');
+    let accountInfo = "";
+    if (method === "CBE Mobile") {
+      accountInfo = "💳 CBE Mobile: +251911111111";
+    } else if (method === "Telebirr") {
+      accountInfo = "💳 Telebirr: +251922222222";
+    } else if (method === "Bank Transfer") {
+      accountInfo = "🏦 Awash Bank: 123456789";
+    } else if (method === "Airtime") {
+      accountInfo = "📱 Airtime: +251933333333";
+    } else {
+      accountInfo = "";
+    }
+    if (accountInfo) {
+      accountText.style.display = "inline-block";
+      accountText.innerText = accountInfo;
+    } else {
+      accountText.style.display = "none";
+    }
+  };
+}
+</script>
+
+</body>
+</html>
